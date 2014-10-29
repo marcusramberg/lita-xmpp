@@ -41,6 +41,7 @@ module Lita
 
         def roster_update
           roster.add_update_callback do |old_item, item|
+            next unless item
             jid = item.attributes["jid"]
             Lita.logger.debug("Updating record for user with ID: #{jid}.")
             create_user(item.attributes)
@@ -49,16 +50,11 @@ module Lita
 
         private
 
-        def jid_without_domain(jid)
-          jid.to_s.sub(/@.*/, '')
-        end
-
         def create_user(user_data)
-          name = user_data['name'].downcase.gsub(/\s+/, '.')
           User.create(
             user_data["jid"],
-            name: name,
-            mention_name: jid_without_domain(user_data['jid'])
+            name: user_data["name"],
+            mention_name: user_data["mention_name"]
           )
         end
 
@@ -68,14 +64,15 @@ module Lita
         end
 
         def user_by_name(name)
-          Lita.logger.info("Looking up user with name: #{name}.")
-          items = roster.items.detect { |jid, item| jid_without_domain(jid) == name }
-
+          Lita.logger.debug("Looking up user with name: #{name}.")
+          items = roster.items.detect { |jid, item| item.iname == name }
           if items
-            Lita.logger.info("Looking up user by jid: #{items.first}.")
             user_by_jid(items.first)
-          else
-            Lita.logger.warn "No user with the name #{name.inspect} was found in the roster"
+          elsif !Lita.config.adapter.ignore_unknown_users
+            Lita.logger.warn <<-MSG.chomp
+No user with the name #{name.inspect} was found in the roster. A temporary user has been created for
+this message, but Lita will not be able to reply.
+MSG
             User.new(nil, name: name)
           end
         end
