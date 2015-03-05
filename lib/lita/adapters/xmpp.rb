@@ -4,12 +4,12 @@ require "lita/adapters/xmpp/connector"
 module Lita
   module Adapters
     class Xmpp < Adapter
-      config :jid, required: True
-      config :password, required: True
-      config :debug, default: False
+      config :jid, type:  String, required: true
+      config :password, type: String, required: true
+      config :debug, default: false
       config :connect_domain
       config :muc_domain
-      config :rooms, required: True
+      config :rooms, type: String, required: true
 
       attr_reader :connector
 
@@ -20,7 +20,7 @@ module Lita
           robot,
           config.jid,
           config.password,
-          debug: config.debug,
+          :debug => config.debug,
           connect_domain: config.connect_domain
         )
       end
