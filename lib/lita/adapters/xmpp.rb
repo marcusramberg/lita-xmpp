@@ -56,9 +56,6 @@ module Lita
 
       private
 
-      def config
-        Lita.config.adapter
-      end
 
       def rooms
         if config.rooms == :all
