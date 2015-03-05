@@ -44,7 +44,7 @@ module Lita
             register_muc_message_callback(muc)
             Lita.logger.info("Joining room: #{room_jid}.")
             muc.join(room_jid)
-            robot.trigger(:connected, { room: 'room_jid' })
+            robot.trigger(:connected, { room: room_jid })
           end
         end
 
