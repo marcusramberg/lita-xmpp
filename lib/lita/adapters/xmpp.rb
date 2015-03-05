@@ -4,14 +4,17 @@ require "lita/adapters/xmpp/connector"
 module Lita
   module Adapters
     class Xmpp < Adapter
-      require_configs :jid, :password
+      config :jid, required: True
+      config :password, required: True
+      config :debug, default: False
+      config :connect_domain
+      config :muc_domain
+      config :rooms, required: True
 
       attr_reader :connector
 
       def initialize(robot)
         super
-
-        set_default_config_values
 
         @connector = Connector.new(
           robot,
@@ -65,9 +68,6 @@ module Lita
         end
       end
 
-      def set_default_config_values
-        config.debug = false if config.debug.nil?
-      end
     end
 
     Lita.register_adapter(:xmpp, Xmpp)
