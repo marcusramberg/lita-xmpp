@@ -9,7 +9,7 @@ module Lita
       config :debug, default: false
       config :connect_domain
       config :muc_domain
-      config :rooms, type: String, required: true
+      config :rooms, required: true
 
       attr_reader :connector
 
